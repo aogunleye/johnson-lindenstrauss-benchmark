@@ -132,7 +132,7 @@ Solving these problems taught me that the superiority of an algorithm is fundame
 
 This all exploration began out of personal curiosity while watching videos about LLMs and context embeddings, but it provided me a invaluable hands-on experience.
 
-Now, I know that if I'm okay with a small amount of interference between my representations, I can represent a lot more things by using near-orthogonal vectors (even random ones!), and I should be able to represent exponentially more. This is what neural networks are doing, a phenomenon formalized in AI research as Superposition ([Elhage et al., 2022](#ref-elhaage2022)).
+Now, I know that if I'm okay with a small amount of interference between my representations, I can represent a lot more things by using near-orthogonal vectors (even random ones!), and I should be able to represent exponentially more. This is what neural networks are doing, a phenomenon formalized in AI research as *representational superposition* ([Elhage et al., 2022](#ref-elhaage2022)).
 
 --- 
 
