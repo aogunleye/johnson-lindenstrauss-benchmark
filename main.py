@@ -38,13 +38,16 @@ def experience_1(X_sparse):
         epsilon = np.sqrt((8 * np.log(N)) / k)
         epsilons_theoriques.append(epsilon)
 
+    print("Epsilons mesurés (95e percentile) :", epsilons_mesures)
+    print("Epsilons théoriques :", epsilons_theoriques)
+
     plt.figure(figsize=(8, 5))
     plt.xscale('log')  # pour bien visualiser l'évolution sur k
     plt.plot(k_values, epsilons_mesures, label='Epsilon mesuré (95e percentile)', color='blue')
     plt.plot(k_values, epsilons_theoriques, label='Epsilon théorique', linestyle='--', color='red')
-    plt.xlabel('Dimension cible k')
-    plt.ylabel('Erreur de distorsion epsilon')
-    plt.title('Comparaison des epsilons mesurés et théoriques')
+    plt.xlabel('Target dimension k (log scale)')
+    plt.ylabel('Distorsion error epsilon')
+    plt.title('Mesured and theoretical comparison of epsilons')
     plt.legend()
     plt.savefig('epsilon_comparison.png')
     plt.close()
@@ -86,9 +89,9 @@ def experience_2(X_sparse):
     plt.plot(D_values, times['PCA'], label='PCA', marker='o')
     plt.plot(D_values, times['Gaussian'], label='Gaussian Random Projection', marker='o')
     plt.plot(D_values, times['Sparse'], label='Sparse Random Projection', marker='o')
-    plt.xlabel('Dimension originale D')
-    plt.ylabel('Temps d\'exécution en secondes')
-    plt.title('Comparaison des temps d\'exécution')
+    plt.xlabel('Original dimension D')
+    plt.ylabel('Execution time in seconds')
+    plt.title('Comparison of execution times')
     plt.legend()
     plt.savefig('execution_time_comparison.png')
     plt.close()
@@ -104,4 +107,3 @@ def main():
 if __name__ == '__main__':
     main()
 
-    
