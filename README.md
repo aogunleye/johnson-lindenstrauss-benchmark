@@ -85,8 +85,6 @@ $$\implies \epsilon_{\text{theoretical}}(k) = O\left(\frac{1}{\sqrt{k}}\right)$$
 The results validate the theoretical foundation of the JL lemma. Across all target dimensions $k$ (log scaled for better visualisation), the empirical distortion strictly follows $O(1/\sqrt{k})$ while staying consistently under the theoretical upper bound. 
 scikit-learn's `johnson_lindenstrauss_min_dim` function calculates a pessimistic worst-case limit. On the `20newsgroups dataset`, the projection works much better than this worst-case prediction and we reach $\epsilon \le 0.10$ at just $k \approx 250$, whereas the theoretical formula strictly requires $k = 5\,920$ for $N = 1\,000$.
 
----
-
 ### Experiment 2:
 
 First of all, we can calculate the complexity for each of the reduction methods : 
