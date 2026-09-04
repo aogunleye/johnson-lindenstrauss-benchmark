@@ -87,7 +87,7 @@ def experience_2(X_sparse):
         times['Sparse'].append(time_Sparse)
 
     plt.figure(figsize=(8, 5))
-    plt.plot(D_values, times['PCA (TruncatedSVD)'], label='PCA', marker='o')
+    plt.plot(D_values, times['PCA'], label='PCA (TruncatedSVD)', marker='o')
     plt.plot(D_values, times['Gaussian'], label='Gaussian Random Projection', marker='o')
     plt.plot(D_values, times['Sparse'], label='Sparse Random Projection', marker='o')
     plt.xlabel('Original dimension D')
