@@ -132,6 +132,8 @@ Solving these problems taught me that the superiority of an algorithm is fundame
 
 This all exploration began out of personal curiosity while watching videos about LLMs and context embeddings, but it provided me a invaluable hands-on experience.
 
+Now, I know that if I'm okay with a small amount of interference between my representations, I can represent a lot more things by using near-orthogonal vectors (even random!), and I should be able to represent exponentially more. This is what neural networks are doing, a phenomenon formalized in AI research as Superposition ([Elhage et al., 2022](#ref-elhaage2022)).
+
 --- 
 
 ## References
@@ -140,3 +142,4 @@ This all exploration began out of personal curiosity while watching videos about
 * <a id="ref-jl84"></a>Johnson, W. B., & Lindenstrauss, J. (1984). Extensions of Lipschitz mappings into a Hilbert space. Contemporary Mathematics, 26, 189–206. [[link](https://doi.org/10.1090/conm/026/737400)]
 * <a id="ref-ln17"></a>Larsen, K. G., & Nelson, J. (2017). Optimality of the Johnson-Lindenstrauss Lemma. IEEE 58th Annual Symposium on Foundations of Computer Science (FOCS), 633–638. [[link](https://arxiv.org/abs/1609.02094)]
 * <a id="ref-ach2003"></a>Achlioptas, D. (2003). Database-friendly random projections: Johnson-Lindenstrauss with binary coins. Journal of Computer and System Sciences, 66(4), 671–687. [[link](https://doi.org/10.1016/S0022-0000(03)00025-4)]
+* <a id="ref-elhaage2022"></a>Elhage, N., Hume, T., Olsson, C., Schiefer, N., Henighan, T., Kravec, S., Hatfield-Dodds, Z., Speer, R., Khan, A., Chen, B., Johnston, R., El-Showk, S., Joseph, N., DasSarma, N., Hatfield-Dodds, S., Mann, B., Hernandez, D., Askell, A., Kamal, S., … Olah, C. (2022). Toy Models of Superposition. Anthropic. [[link](https://transformer-circuits.pub/2022/toy_models/index.html)]
