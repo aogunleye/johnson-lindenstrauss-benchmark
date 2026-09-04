@@ -41,7 +41,9 @@ We will evaluate two primary aspects:
 
 
 Dataset: 20newsgroups (vectorized with TfidfVectorizer)
+
 Sample size $N$: 1,000 documents
+
 Metrics: 95th percentile relative distance error and execution time (seconds)
 
 
