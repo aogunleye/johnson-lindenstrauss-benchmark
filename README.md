@@ -12,7 +12,7 @@ This report presents an empirical evaluation of dimensionality reduction on high
 
 ![alt text](jllemma.png)
 
-The Johnson-Lindenstrauss lemma guarantees that a set of $N$ points in a high-dimensional space $\mathbb{R}^D$ can be mapped into a much lower-dimensional space $\mathbb{R}^k$ while preserving pairwise euclidean distances up to a factor of $(1 \pm \epsilon)$.
+The Johnson-Lindenstrauss lemma guarantees that a set of $N$ points in a high-dimensional space $\mathbb{R}^D$ can be mapped into a much lower-dimensional space $\mathbb{R}^k$ while preserving pairwise euclidean distances up to a factor of $1 \pm \epsilon$.
 
 For any $\epsilon \in (0, 1)$ and integer $N$, if the target dimension $k$ satisfies:
 
@@ -55,17 +55,17 @@ The distance error is calculated as the relative difference between pairwise euc
 
 $$\text{Error}_{i,j} = \left\vert{} \frac{\Vert{}f(x_i) - f(x_j)\Vert{}}{\Vert{}x_i - x_j\Vert{}} - 1 \right\vert{}$$
 
-and : $$\quad k \ge \frac{8 \ln(N)}{\epsilon_{\text{theoretical}}^2}$$
+and we can also deduce that : $$ \quad k \ge \frac{8 \ln(N)}{\epsilon_{\text{theoretical}}^2}$$
 
-$$\epsilon_{\text{theoretical}}^2 \ge \frac{8 \ln(N)}{k}$$
+$$\implies \epsilon_{\text{theoretical}}^2 \ge \frac{8 \ln(N)}{k}$$
 
-$$\epsilon_{\text{theoretical}} \ge \sqrt{\frac{8 \ln(N)}{k}}$$
+$$\implies \epsilon_{\text{theoretical}} \ge \sqrt{\frac{8 \ln(N)}{k}}$$
 
-$$\epsilon_{\text{theoretical}} \ge \underbrace{\sqrt{8 \ln(N)}}_{\text{constant since } N \text{ is fixed }} \cdot \frac{1}{\sqrt{k}}$$
+$$\implies \epsilon_{\text{theoretical}} \ge \underbrace{\sqrt{8 \ln(N)}}_{\text{constant since } N \text{ is fixed }} \cdot \frac{1}{\sqrt{k}}$$
 
-$$\epsilon_{\text{theoretical}}(k) = O\left(\frac{1}{\sqrt{k}}\right)$$
+$$\implies \epsilon_{\text{theoretical}}(k) = O\left(\frac{1}{\sqrt{k}}\right)$$
 
-| $k$ | $\epsilon_{\text{mesured}}$ | $\epsilon_{\text{theoretical}}$ |
+| $k$ | $\epsilon_{\text{measured}}$ | $\epsilon_{\text{theoretical}}$ |
 | --- | --- | --- |
 | **10** | 0.4332 | 2.3508 |
 | **20** | 0.3113 | 1.6623 |
@@ -87,37 +87,47 @@ Scikit-learn's `johnson_lindenstrauss_min_dim` function calculates a pessimistic
 
 ### Experiment 2:
 
-| Original dimension $D$ | PCA time (s) | Gaussian RP time (s) | Sparse RP time (s) |
+First of all, we can calculate the complexity for each of the reduction methods : 
+
+-  **TruncatedSVD (adapted PCA to sparse data): $O(\min(N \cdot D^2, N^2 \cdot D))$**
+PCA computes the SVD of the data matrix $X$ ($N \times D$). The algorithm can operate either on the covariance matrix $X^T X$ ($D \times D$) or the sample matrix $X X^T$ ($N \times N$), picking whichever is smaller (the $\min$ term).
+
+- **Gaussian JL: $O(N \cdot D \cdot k)$**
+Random projection multiplies $X$ ($N \times D$) by a dense random matrix $R$ ($D \times k$). The output matrix has size $N \times k$. Computing the dot products takes $O(D)$ operations per $N \times k$ cell.
+
+
+- **Sparse JL ([Achlioptas, 2003](#ref-ach2003)): $O\left(\frac{N \cdot D \cdot k}{s}\right)$**
+In Sparse JL, a sparsity factor $s$ is introduced such that $1 - (1/s)$ of $R$ consists of zeros.
+During the matrix multiplication, zero entries are skipped. Each dot product only computes $D/s$ non-zero terms instead of $D$.
+
+*Now, let's test it ourselves :*
+
+| Original dimension $D$ | TruncatedSVD time (s) | Gaussian RP time (s) | Sparse RP time (s) |
 | :--- | :--- | :--- | :--- |
-| **1,000** | 0.1506 | 0.0090 | 0.0219 |
-| **2,500** | 0.2350 | 0.0222 | 0.0328 |
-| **5,000** | 0.2971 | 0.0321 | 0.0533 |
-| **10,000** | 0.5911 | 0.0839 | 0.1384 |
-| **25,000** | 1.9251 | 0.1570 | 0.2263 |
-| **50,000** | 4.0728 | 0.3896 | 0.5412 |
-
-A first run using `svd_solver='full'` produced non-monotonic computation spikes on the PCA execution curve.
-
-![alt text](execution_time_comparison_copy.png)
-
-Trying to find the problem causing this strange behavior, for small dimensions $D$, the matrix is small enough to fit easily into the processor's cache memory, keeping calculations fast. But once a certain size threshold is crossed ($D = 10\,000$ here), the matrix becomes too large to process efficiently. Apparently, LAPACK (the underlying C/Fortran linear algebra library used by SciPy and scikit-learn for exact matrix calculations) forces the sparse data into a huge dense matrix. This triggers a sudden RAM bottleneck and causes CPU slowdowns. Once past this threshold ($D \ge 25\,000$), the system's memory allocation is reorganized to stabilize the execution time.
-
-Switching to `svd_solver='randomized'` ([Halko et al., 2011](#ref-halko2011)) smooths out the scaling trajectory, producing a predictable curve across all dimensions, though still remaining much slower than random projection.
+| **1,000** | 0.0865 | 0.0032 | 0.0041 |
+| **2,500** | 0.1286 | 0.0083 | 0.0070 |
+| **5,000** | 0.1833 | 0.0141 | 0.0118 |
+| **10,000** | 0.2964 | 0.0279 | 0.0248 |
+| **25,000** | 0.8234 | 0.0720 | 0.0492 |
+| **50,000** | 1.7603 | 0.1354 | 0.0643 |
 
 ![alt text](execution_time_comparison.png)
 
-Indeed, we observe that even with randomized approximations, PCA scaling remains heavily constrained by covariance matrix projections, reaching more than 4 seconds at $D = 50\,000$.
-Both Gaussian and Sparse random projections execute approximately $10.5\times$ faster than PCA at $D = 50\,000$.
-We can also see that Gaussian RP runs faster than Sparse RP.
+Indeed, we observe that PCA scaling is heavily constrained, reaching almost 2 seconds at $D = 50\,000$.
+Gaussian random projection executes approximately $13\times$ faster than PCA at $D = 50\,000$, while Sparse RP achieves a $27\times$ speedup over PCA.
+As anticipated by Achlioptas, Sparse RP outperforms Gaussian RP at higher dimensions, running more than twice faster at $D = 50\,000$ ($0.0643\text{s}$ vs. $0.1354\text{s}$).
 
 ---
 
 ## 4. Conclusion
 
 1. The JL lemma holds on sparse TF-IDF text matrices with strong distance preservation. 
-2. Random projections run way faster than PCA, with Gaussian RP slightly outperforming Sparse RP in execution time. 
+2. Random projections run way faster than PCA, with Sparse RP outperforming Gaussian RP. 
 
-This exploration began out of personal curiosity while watching videos about LLMs and context embeddings. Diving into the Johnson-Lindenstrauss lemma and randomized algorithms provided a invaluable hands-on experience. Uncovering these dynamics firsthand has been an incredibly enriching exercise.
+During the benchmarking process, Gaussian RP initially ran faster than Sparse RP. After deeper investigation, I discovered that converting sparse data into dense arrays via `.toarray()` in the second experience completely stripped Sparse RP of its algorithmic advantage while causing memory problems with traditional PCA. I successfully resolved these issues by preserving the native sparse format and replacing PCA with TruncatedSVD (following the [sckit-learn PCA documentation](https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.PCA.html)'s advices). 
+Solving these problems taught me that the superiority of an algorithm is fundamentally tied to data structures (and hardware optimizations as some level), rather than just its theoretical complexity. Realizing it surprisingly required me way more documentation than I expected when beginning this project.
+
+This all exploration began out of personal curiosity while watching videos about LLMs and context embeddings, but it provided me a invaluable hands-on experience.
 
 --- 
 
@@ -126,4 +136,4 @@ This exploration began out of personal curiosity while watching videos about LLM
 * <a id="ref-alon03"></a>Alon, N. (2003). Problems and results in extremal combinatorics. I. Discrete Mathematics, 273(1–3), 31–53. [[link](https://doi.org/10.1016/S0012-365X(03)00225-5)]
 * <a id="ref-jl84"></a>Johnson, W. B., & Lindenstrauss, J. (1984). Extensions of Lipschitz mappings into a Hilbert space. Contemporary Mathematics, 26, 189–206. [[link](https://doi.org/10.1090/conm/026/737400)]
 * <a id="ref-ln17"></a>Larsen, K. G., & Nelson, J. (2017). Optimality of the Johnson-Lindenstrauss Lemma. IEEE 58th Annual Symposium on Foundations of Computer Science (FOCS), 633–638. [[link](https://arxiv.org/abs/1609.02094)]
-* <a id="ref-halko2011"></a>Halko, N., Martinsson, P. G., & Tropp, J. A. (2011). Finding structure with randomness: Probabilistic algorithms for constructing approximate matrix decompositions. SIAM Review, 53(2), 217-288. [[link](https://arxiv.org/pdf/0909.4061.pdf)]
+* <a id="ref-ach2003"></a>Achlioptas, D. (2003). Database-friendly random projections: Johnson-Lindenstrauss with binary coins. Journal of Computer and System Sciences, 66(4), 671–687. [[link](https://doi.org/10.1016/S0022-0000(03)00025-4)]

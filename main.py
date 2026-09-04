@@ -5,7 +5,7 @@ import scipy
 from scipy.spatial.distance import pdist
 from sklearn.datasets import fetch_20newsgroups
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.decomposition import PCA
+from sklearn.decomposition import PCA, TruncatedSVD
 from sklearn.random_projection import GaussianRandomProjection, SparseRandomProjection, johnson_lindenstrauss_min_dim
 
 def charger_donnees():
@@ -52,9 +52,6 @@ def experience_1(X_sparse):
     plt.savefig('epsilon_comparison.png')
     plt.close()
 
-
-# ----------------------------------------------------------------------------
-
 # Experience 2 :
 
 def experience_2(X_sparse):
@@ -64,23 +61,27 @@ def experience_2(X_sparse):
     times = {'PCA': [], 'Gaussian': [], 'Sparse': []}
 
     for D in D_values:
-        X = X_sparse[:N, :D].toarray()
+        X_sub_sparse = X_sparse[:N, :D]
+        
+        # 1. ACP adaptée aux matrices creuses
         start_time = time.time()
-        transformer_PCA = PCA(n_components=k, svd_solver='randomized', random_state=42)
-        X_PCA = transformer_PCA.fit_transform(X)
+        transformer_PCA = TruncatedSVD(n_components=k, random_state=42)
+        X_PCA = transformer_PCA.fit_transform(X_sub_sparse)
         time_PCA = time.time() - start_time
 
+        # 2. Gaussian RP
         start_time = time.time()
         transformer_Gauss = GaussianRandomProjection(n_components=k, random_state=42)
-        X_Gauss = transformer_Gauss.fit_transform(X)
-        time_Gauss= time.time() - start_time
+        X_Gauss = transformer_Gauss.fit_transform(X_sub_sparse)
+        time_Gauss = time.time() - start_time
 
+        # 3. Sparse RP
         start_time = time.time()
         transformer_Sparse = SparseRandomProjection(n_components=k, random_state=42)
-        X_Sparse = transformer_Sparse.fit_transform(X)
+        X_Sparse = transformer_Sparse.fit_transform(X_sub_sparse)
         time_Sparse = time.time() - start_time
 
-        print(f"D = {D}: PCA time = {time_PCA:.4f}s, Gaussian time = {time_Gauss:.4f}s, Sparse time = {time_Sparse:.4f}s")
+        print(f"D = {D}: PCA = {time_PCA:.4f}s, Gaussian = {time_Gauss:.4f}s, Sparse = {time_Sparse:.4f}s")
         times['PCA'].append(time_PCA)
         times['Gaussian'].append(time_Gauss)
         times['Sparse'].append(time_Sparse)
