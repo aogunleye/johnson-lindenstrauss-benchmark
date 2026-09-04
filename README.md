@@ -117,6 +117,8 @@ We can also see that Gaussian RP runs faster than Sparse RP.
 1. The JL lemma holds on sparse TF-IDF text matrices with strong distance preservation. 
 2. Random projections run way faster than PCA, with Gaussian RP slightly outperforming Sparse RP in execution time. 
 
+This exploration began out of personal curiosity while watching videos about LLMs and context embeddings. Diving into the Johnson-Lindenstrauss lemma and randomized algorithms provided a invaluable hands-on experience. Uncovering these dynamics firsthand has been an incredibly enriching exercise.
+
 --- 
 
 ## References
