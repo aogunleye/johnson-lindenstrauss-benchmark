@@ -127,6 +127,7 @@ As anticipated by Achlioptas, Sparse RP outperforms Gaussian RP at higher dimens
 2. Random projections run way faster than PCA, with Sparse RP outperforming Gaussian RP. 
 
 During the benchmarking process, Gaussian RP initially ran faster than Sparse RP. After deeper investigation, I discovered that converting sparse data into dense arrays via `.toarray()` in the second experience completely stripped Sparse RP of its algorithmic advantage while causing memory problems with traditional PCA. I successfully resolved these issues by preserving the native sparse format and replacing PCA with TruncatedSVD (following the [sckit-learn PCA documentation](https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.PCA.html) advices). 
+
 Solving these problems taught me that the superiority of an algorithm is fundamentally tied to data structures (and hardware optimizations as some level), rather than just its theoretical complexity. Realizing it surprisingly required me way more documentation than I expected when beginning this project.
 
 This all exploration began out of personal curiosity while watching videos about LLMs and context embeddings, but it provided me a invaluable hands-on experience.
