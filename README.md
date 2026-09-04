@@ -57,7 +57,9 @@ The distance error is calculated as the relative difference between pairwise euc
 
 $$\text{Error}_{i,j} = \left\vert{} \frac{\Vert{}f(x_i) - f(x_j)\Vert{}}{\Vert{}x_i - x_j\Vert{}} - 1 \right\vert{}$$
 
-and we can also deduce that : $$ \quad k \ge \frac{8 \ln(N)}{\epsilon_{\text{theoretical}}^2}$$
+and we can also deduce that : 
+
+$$ \quad k \ge \frac{8 \ln(N)}{\epsilon_{\text{theoretical}}^2}$$
 
 $$\implies \epsilon_{\text{theoretical}}^2 \ge \frac{8 \ln(N)}{k}$$
 
