@@ -117,7 +117,7 @@ During the matrix multiplication, zero entries are skipped. Each dot product onl
 
 Indeed, we observe that PCA scaling is heavily constrained, reaching almost 2 seconds at $D = 50\,000$.
 Gaussian random projection executes approximately $13\times$ faster than PCA at $D = 50\,000$, while Sparse RP achieves a $27\times$ speedup over PCA.
-As anticipated by Achlioptas, Sparse RP outperforms Gaussian RP at higher dimensions, running more than twice faster at $D = 50\,000$ ($0.0643\text{s}$ vs. $0.1354\text{s}$).
+And as anticipated by Achlioptas, Sparse RP outperforms Gaussian RP at higher dimensions, running more than twice faster at $D = 50\,000$ ($0.0643\text{s}$ vs. $0.1354\text{s}$).
 
 ---
 
